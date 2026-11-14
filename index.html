@@ -209,7 +209,7 @@ const projects={
   },
   "johnny": {
     "title": "Tootatis",
-    "meta": "Johnny · Clip",
+    "meta": "Johnny · Clip · 2026",
     "yt": "wW1M0wNNMy4",
     "source": "johnny-tootatis.mp4"
   },
@@ -289,6 +289,32 @@ const projects={
     "meta": "Court-métrage · 2023",
     "yt": "JWVtg2b61Mo",
     "source": "je_t_haine.mp4"
+  },
+  "pepite": {
+    "title": "91 O 78",
+    "meta": "La Pépite F7 & DVEMSO · Clip · 2022",
+    "asset": "pepite-91-o-78",
+    "yt": "MkF3ZBRZnoA"
+  },
+  "booste": {
+    "title": "Boosté #1",
+    "meta": "Johnny · Clip · 2026",
+    "asset": "johnny-booste-1",
+    "yt": "xX8JM2GmLds"
+  },
+  "strada": {
+    "title": "Strada",
+    "meta": "La Cuenta · Clip · 2023",
+    "asset": "strada",
+    "yt": "Vpg36VRrrvw"
+  },
+  "talbin": {
+    "title": "Talbin",
+    "meta": "Ninho & ZED · Session studio · 2026",
+    "asset": "talbin-studio",
+    "heroSource": "talbin-accueil.mp4",
+    "label": "Label : LDS Production / AllPoints",
+    "fullPreview": true
   }
 };
 const paths={
@@ -296,6 +322,7 @@ const paths={
     "title": "Réalisations",
     "copy": "",
     "ids": [
+      "talbin",
       "loyal",
       "france",
       "frimons",
@@ -312,6 +339,7 @@ const paths={
       "wedding"
     ],
     "hero": [
+      "talbin",
       "loyal",
       "france",
       "frimons",
@@ -326,6 +354,7 @@ const paths={
     "title": "Artistes & labels",
     "copy": "",
     "ids": [
+      "talbin",
       "over",
       "loyal",
       "zedkadja",
@@ -342,6 +371,7 @@ const paths={
       "visualisers"
     ],
     "hero": [
+      "talbin",
       "over",
       "loyal",
       "zedkadja",
@@ -388,13 +418,16 @@ const paths={
     "title": "Réalisations",
     "copy": "Spider, c’est l’autre signature de mon travail musical. Un espace où j’explore d’autres rythmes et d’autres façons de construire mes images.",
     "ids": [
+      "booste",
       "international",
       "johnny",
       "moncler",
       "zedkadja",
       "likedat",
       "loyal",
-      "lieu"
+      "lieu",
+      "strada",
+      "pepite"
     ],
     "hero": [
       "loyal",
@@ -419,7 +452,7 @@ const icon=on=>'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3
 const poster=p=>p.cover||(p.yt?'https://img.youtube.com/vi/'+p.yt+'/maxresdefault.jpg':''+p.asset+'.jpg');
 const url=p=>p.url||(p.yt?'https://youtu.be/'+p.yt:null);
 const heroCache=new Map();
-function heroNode(p){if(!heroCache.has(p)){const n=document.createElement('div');n.innerHTML=p.triple?panels(p):'<img src="'+poster(p)+'" alt="'+p.title+'">'+((p.asset||p.source)?sourceVideo(p):'');heroCache.set(p,[...n.childNodes]);}return heroCache.get(p);}
+function heroNode(p){if(!heroCache.has(p)){const n=document.createElement('div');n.innerHTML=p.triple?panels(p):'<img src="'+poster(p)+'" alt="'+p.title+'">'+((p.asset||p.source)?sourceVideo(p.heroSource?{...p,source:p.heroSource}:p):'');heroCache.set(p,[...n.childNodes]);}return heroCache.get(p);}
 function warmHero(p){heroNode(p).forEach(n=>{const vs=n.tagName==='VIDEO'?[n]:n.querySelectorAll('video');vs.forEach(v=>{if(v.preload!=='auto'){v.preload='auto';v.load();}});});}
 const video=a=>'<video src="'+a+'.mp4" muted playsinline loop preload="none"></video>';
 const sourceVideo=p=>p.source?'<video src="'+p.source+'" muted playsinline loop preload="none"></video>':video(p.asset);
@@ -490,7 +523,7 @@ const hit=document.querySelector('#hero-hit');hit.hidden=!url(p);if(url(p)){hit.
 $('#hero-title').textContent=p.meta+' - '+p.title;$('#hero-link').hidden=!url(p);if(url(p))$('#hero-link').href=url(p);$('#hero-link').textContent=p.url?'Voir le film sur Instagram':'Voir le film';$('#hero-sound').hidden=!(p.asset||p.source);
 $('#slide-tabs').innerHTML=ids.length>1?ids.map((id,i)=>'<button class="slide-tab" aria-label="Afficher '+projects[id].title+'" aria-current="'+(i===index)+'" data-slide="'+i+'"></button>').join(''):'';$('#slide-tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{index=Number(b.dataset.slide);showHero();});hero.querySelectorAll('video').forEach((v,i)=>{v.preload='auto';v.loop=false;if(i===0)v.onended=()=>{if(rotate&&heroVisible&&!activeCard&&!document.hidden)nextHero();};v.hidden=false;});syncHero();const current=hero.querySelector('video');const warm=()=>warmHero(projects[ids[(index+1)%ids.length]]);if(current&&current.readyState<3)current.addEventListener('canplay',warm,{once:true});else warm();}
 function render(key){if(cardVisibility)cardVisibility.disconnect();if(preloadObserver)preloadObserver.disconnect();grid.querySelectorAll('.project').forEach(c=>stopCard(c,true));muteAll();heroSound=false;route=key;index=0;const p=paths[key];document.querySelectorAll('[data-path]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.path===key)));$('#heading').textContent=p.title;$('#description').textContent=p.copy;
-grid.innerHTML=p.ids.map(id=>{const v=projects[id],href=url(v);return '<article class="project" data-id="'+id+'" data-audio-index="0"><div class="visual '+(v.portrait?'portrait':'')+'">'+(v.triple?panels(v):'<img src="'+poster(v)+'" alt="'+v.title+'">'+((v.asset||v.source)?sourceVideo(v):'<span class="notice">Aperçu vidéo à rattacher</span>'))+(href?'<a class="media-link" href="'+href+'" target="_blank" rel="noopener" aria-label="Voir '+v.title+'"></a><a class="watch" href="'+href+'" target="_blank" rel="noopener">Voir le film</a>':(v.triple?'':'<span class="watch">Aperçu au survol</span>'))+((v.asset||v.source)?'<button class="sound" type="button" aria-label="Activer le son" aria-pressed="false">'+icon(false)+'</button>':'')+'</div><div class="meta">'+v.meta+'</div><h3>'+v.title+'</h3>'+(v.label?'<div class="project-label">'+v.label+'</div>':'')+(v.copy?'<p>'+v.copy+'</p>':'')+(v.items?'<ol class="collection-list">'+v.items.map((it,i)=>'<li><button type="button" data-track="'+i+'" aria-pressed="'+(i===0)+'"><b>'+String(i+1).padStart(2,'0')+'</b>'+it.name+'<span>'+it.detail+'</span></button></li>').join('')+'</ol><p class="collection-note">Choisissez un titre pour sélectionner son audio, puis activez le son.</p>':'')+'</article>';}).join('');
+grid.innerHTML=p.ids.map(id=>{const v=projects[id],href=url(v);return '<article class="project" data-id="'+id+'" data-audio-index="0"><div class="visual '+(v.portrait?'portrait':'')+'">'+(v.triple?panels(v):'<img src="'+poster(v)+'" alt="'+v.title+'">'+((v.asset||v.source)?sourceVideo(v):'<span class="notice">Aperçu vidéo à rattacher</span>'))+(href?'<a class="media-link" href="'+href+'" target="_blank" rel="noopener" aria-label="Voir '+v.title+'"></a><a class="watch" href="'+href+'" target="_blank" rel="noopener">Voir le film</a>':(v.triple?'':'<span class="watch">'+(v.fullPreview?'Session complète · Activez le son':'Aperçu au survol')+'</span>'))+((v.asset||v.source)?'<button class="sound" type="button" aria-label="Activer le son" aria-pressed="false">'+icon(false)+'</button>':'')+'</div><div class="meta">'+v.meta+'</div><h3>'+v.title+'</h3>'+(v.label?'<div class="project-label">'+v.label+'</div>':'')+(v.copy?'<p>'+v.copy+'</p>':'')+(v.items?'<ol class="collection-list">'+v.items.map((it,i)=>'<li><button type="button" data-track="'+i+'" aria-pressed="'+(i===0)+'"><b>'+String(i+1).padStart(2,'0')+'</b>'+it.name+'<span>'+it.detail+'</span></button></li>').join('')+'</ol><p class="collection-note">Choisissez un titre pour sélectionner son audio, puis activez le son.</p>':'')+'</article>';}).join('');
 grid.querySelectorAll('.project').forEach(card=>{
  card.dataset.soundOn='false';
  const visual=card.querySelector('.visual');
